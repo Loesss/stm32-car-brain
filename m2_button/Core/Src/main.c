@@ -42,7 +42,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+volatile uint32_t press_count = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -204,8 +204,18 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+	static uint32_t last_tick = 0;
+
     if (GPIO_Pin == BTN_Pin) {
-        HAL_GPIO_TogglePin(LED_EXT_GPIO_Port, LED_EXT_Pin);
+    	uint32_t now = HAL_GetTick();
+
+    	if(now - last_tick > 50) {
+    		last_tick = now;
+    		press_count++;
+    		HAL_GPIO_TogglePin(LED_EXT_GPIO_Port, LED_EXT_Pin);
+    	}
+
+
     }
 }
 /* USER CODE END 4 */
